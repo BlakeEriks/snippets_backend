@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// model User {
+//   id    Int     @id @default(autoincrement())
+//   email String  @unique
+//   name  String?
+//   posts Post[]
+// }
+
+model Book {
+  id        Int @id @default(autoincrement())
+  title     String
+  author    Author  @relation(fields: [authorId], references: [id])
+  authorId  Int
+  quotes    Quote[]
+}
+
+model Author {
+  id        Int @id @default(autoincrement())
+  name      String
+  books     Book[]
+}
+
+model Quote {
+  createdAt DateTime @id
+  source    Book @relation(fields: [sourceId], references: [id])
+  sourceId  Int
+  content   String
+  quotee    String? // Default to book author
+  meta      String?
+  deleted   Boolean @default(false)
+
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+  // published Boolean  @default(false)
+  // viewCount Int      @default(0)
+  // author    User?    @relation(fields: [authorId], references: [id])
+  // authorId  Int?
+}
