@@ -1,5 +1,10 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient, Tag } from '@prisma/client'
 import express from 'express'
+import QuoteRouter from './controllers/quote';
+import AuthorRouter from './controllers/author';
+import BookRouter from './controllers/book';
+import UserRouter from './controllers/user';
+import TagRouter from './controllers/tag';
 const cors = require('cors');
 
 const prisma = new PrismaClient()
@@ -8,132 +13,19 @@ const app = express()
 app.use(express.json())
 app.use(cors({ origin: '*' }));
 
-app.get('/quotes', async (req, res) => {
-  const quotes = await prisma.quote.findMany({
-    include: {
-      source: true
-    }
-  })
-  res.json(quotes)
-})
+app.use('/quotes', QuoteRouter)
+app.use('/authors', AuthorRouter)
+app.use('/books', BookRouter)
+app.use('/users', UserRouter)
+app.use('/tags', TagRouter)
 
-app.post('/quotes', async (req, res) => {
-  const { source, content, quotee, createdAt, meta} = req.body
+const server = app.listen(8000, () =>
+  console.log(`
+    🚀 Server ready at: http://localhost:8000
+    ⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api
+  `)
+)
 
-  const data: Prisma.QuoteCreateInput = {
-    createdAt: new Date(createdAt),
-    source: {
-      connect: {
-        id: source.id
-      }
-    },
-    content,
-    quotee: quotee ? quotee : source.author.name,
-    meta
-  }
-  console.log(data)
-  await prisma.quote.create({ data })
-  res.redirect('/quotes')
-})
-
-app.put('/quotes/:createdAt', async (req, res) => {
-  // const {  } = req.params
-  // console.log(createdAt)
-  const { source, content, quotee, meta, createdAt } = req.body
-
-  const data: Prisma.QuoteUpdateInput = {
-    source: {
-      connect: {
-        id: source.id
-      }
-    },
-    content,
-    quotee: quotee ? quotee : source.author.name,
-    meta,
-    createdAt
-  }
-  await prisma.quote.update({
-    where: { createdAt: new Date(createdAt) },
-    data
-  })
-  res.redirect(303, '/quotes')
-})
-
-app.delete('/quotes/:id', async (req, res) => {
-  const { id } = req.params
-
-  const result = await prisma.quote.delete({
-    where: {
-      createdAt: new Date(id),
-    },
-  })
-  res.json(result)
-})
-
-app.get('/authors', async (req, res) => {
-  const authors = await prisma.author.findMany()
-  res.json(authors)
-})
-
-app.post('/authors', async (req, res) => {
-  const { name } = req.body
-
-  const data: Prisma.AuthorCreateInput = {
-    name
-  }
-  
-  const result = await prisma.author.create({ data })
-  res.json(result)
-})
-
-app.delete('/authors/:id', async (req, res) => {
-  const { id } = req.params
-
-  const result = await prisma.author.delete({
-    where: {
-      id: Number(id),
-    },
-  })
-  res.json(result)
-})
-
-app.get('/books', async (req, res) => {
-  const books = await prisma.book.findMany({ 
-    include: {
-      author: true
-    } 
-  })
-  res.json(books)
-})
-
-app.post('/books', async (req, res) => {
-  const { author, title } = req.body
-
-  console.log(req.body)
-
-  const data: Prisma.BookCreateInput = {
-    author: {
-      connect: {
-        id: author.id
-      }
-    },
-    title,
-  }
-  
-  const result = await prisma.book.create({ data })
-  res.redirect('/books');
-})
-
-app.delete('/books/:id', async (req, res) => {
-  const { id } = req.params
-
-  const result = await prisma.book.delete({
-    where: {
-      id: Number(id),
-    },
-  })
-  res.json(result)
-})
 
 // app.post(`/signup`, async (req, res) => {
 //   const { name, email, posts } = req.body
@@ -273,9 +165,3 @@ app.delete('/books/:id', async (req, res) => {
 
 //   res.json(posts)
 // })
-
-const server = app.listen(8000, () =>
-  console.log(`
-🚀 Server ready at: http://localhost:8000
-⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`),
-)
