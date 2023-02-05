@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 const BookRouter = express.Router()
 
 // Books
-BookRouter.get('/books', async (req, res) => {
+BookRouter.get('/', async (req, res) => {
   const books = await prisma.book.findMany({ 
     include: {
       author: true
@@ -16,7 +16,7 @@ BookRouter.get('/books', async (req, res) => {
   res.json(books)
 })
 
-BookRouter.post('/books', async (req, res) => {
+BookRouter.post('/', async (req, res) => {
   const { author, title } = req.body
 
   const data: Prisma.BookCreateInput = {
@@ -31,7 +31,7 @@ BookRouter.post('/books', async (req, res) => {
   res.json(await prisma.book.create({ data }))
 })
 
-BookRouter.delete('/books/:id', async (req, res) => {
+BookRouter.delete('/:id', async (req, res) => {
   const { id } = req.params
 
   const result = await prisma.book.delete({

@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 const TagRouter = express.Router()
 
 // Tags
-TagRouter.get('/tags', async (req, res) => {
+TagRouter.get('/', async (req, res) => {
   const tags = await prisma.tag.findMany({
     include: {
       quotes: true
@@ -16,7 +16,7 @@ TagRouter.get('/tags', async (req, res) => {
   res.json(tags)
 })
 
-TagRouter.post('/tags', async (req, res) => {
+TagRouter.post('/', async (req, res) => {
   const { name } = req.body
 
   const data: Prisma.TagCreateInput = {
@@ -25,6 +25,17 @@ TagRouter.post('/tags', async (req, res) => {
   
   const result = await prisma.tag.create({ data })
   res.redirect('/tags');
+})
+
+TagRouter.delete('/:id', async (req, res) => {
+  const { id } = req.params
+
+  const result = await prisma.tag.delete({
+    where: {
+      id: Number(id),
+    },
+  })
+  res.json(result)
 })
 
 export default TagRouter

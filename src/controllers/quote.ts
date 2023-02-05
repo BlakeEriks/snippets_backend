@@ -10,20 +10,20 @@ const QuoteRouter = express.Router()
 const formatQuoteInput = (body: any): Prisma.QuoteCreateInput => {
   const { source, content, quotee, createdAt, meta, user, tags } = body
 
-  return {
-    createdAt: new Date(createdAt),
-    source: {
+  const quoteInput: Prisma.QuoteCreateInput = {
+    createdAt: createdAt ? new Date(createdAt) : new Date(),
+    source: source ? {
       connect: {
         id: source.id
       }
-    },
+    } : undefined,
     user: {
       connect: {
         id: user.id
       }
     },
     tags: {
-      connectOrCreate: tags.map((tag: Tag) => ({
+      connectOrCreate: tags?.map((tag: Tag) => ({
         where: { name: tag.name },
         create: { name: tag.name }
       }))
@@ -32,9 +32,11 @@ const formatQuoteInput = (body: any): Prisma.QuoteCreateInput => {
     quotee: quotee ? quotee : source.author.name,
     meta
   }
+
+  return quoteInput
 }
 
-QuoteRouter.get('/quotes', async (req, res) => {
+QuoteRouter.get('/', async (req, res) => {
   const quotes = await prisma.quote.findMany({
     include: {
       source: true,
@@ -45,13 +47,12 @@ QuoteRouter.get('/quotes', async (req, res) => {
   res.json(quotes)
 })
 
-QuoteRouter.post('/quotes', async (req, res) => {
+QuoteRouter.post('/', async (req, res) => {
   const data = formatQuoteInput(req.body)
-  await prisma.quote.create({ data })
-  res.redirect('/quotes')
+  res.json(await prisma.quote.create({ data }))
 })
 
-QuoteRouter.put('/quotes/:id', async (req, res) => {
+QuoteRouter.put('/:id', async (req, res) => {
   const id = parseInt(req.params.id)
   const data = formatQuoteInput(req.body)
   console.log(data)
@@ -62,7 +63,7 @@ QuoteRouter.put('/quotes/:id', async (req, res) => {
   res.json(quote)
 })
 
-QuoteRouter.delete('/quotes/:id', async (req, res) => {
+QuoteRouter.delete('/:id', async (req, res) => {
   const { id } = req.params
 
   const result = await prisma.quote.delete({

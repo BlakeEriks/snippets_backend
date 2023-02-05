@@ -7,12 +7,12 @@ const prisma = new PrismaClient()
 const UserRouter = express.Router()
 
 // Users
-UserRouter.get('/users', async (req, res) => {
+UserRouter.get('/', async (req, res) => {
   const users = await prisma.user.findMany()
   res.json(users)
 })
 
-UserRouter.post('/users', async (req, res) => {
+UserRouter.post('/', async (req, res) => {
   const { name } = req.body
 
   const data: Prisma.UserCreateInput = {
@@ -23,7 +23,7 @@ UserRouter.post('/users', async (req, res) => {
   res.redirect('/users');
 })
 
-UserRouter.delete('/users/:id', async (req, res) => {
+UserRouter.delete('/:id', async (req, res) => {
   const { id } = req.params
 
   const result = await prisma.user.delete({

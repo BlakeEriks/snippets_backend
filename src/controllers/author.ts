@@ -7,12 +7,12 @@ const prisma = new PrismaClient()
 const AuthorRouter = express.Router()
 
 // Authors
-AuthorRouter.get('/authors', async (req, res) => {
+AuthorRouter.get('/', async (req, res) => {
   const authors = await prisma.author.findMany()
   res.json(authors)
 })
 
-AuthorRouter.post('/authors', async (req, res) => {
+AuthorRouter.post('/', async (req, res) => {
   const { name } = req.body
 
   const data: Prisma.AuthorCreateInput = {
@@ -23,7 +23,7 @@ AuthorRouter.post('/authors', async (req, res) => {
   res.json(result)
 })
 
-AuthorRouter.delete('/authors/:id', async (req, res) => {
+AuthorRouter.delete('/:id', async (req, res) => {
   const { id } = req.params
 
   const result = await prisma.author.delete({
