@@ -1,23 +1,27 @@
-import { Prisma, PrismaClient, Tag } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import QuoteRouter from './controllers/quote';
-import AuthorRouter from './controllers/author';
-import BookRouter from './controllers/book';
-import UserRouter from './controllers/user';
-import TagRouter from './controllers/tag';
-const cors = require('cors');
+import AuthorRouter from './controllers/author'
+import BookRouter from './controllers/book'
+import QuoteRouter from './controllers/quote'
+import SnippetsRouter from './controllers/snippets'
+import SourceRouter from './controllers/source'
+import TagRouter from './controllers/tag'
+import UserRouter from './controllers/user'
+const cors = require('cors')
 
 const prisma = new PrismaClient()
 const app = express()
 
 app.use(express.json())
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: '*' }))
 
+app.use('/snippets', SnippetsRouter)
 app.use('/quotes', QuoteRouter)
 app.use('/authors', AuthorRouter)
 app.use('/books', BookRouter)
 app.use('/users', UserRouter)
 app.use('/tags', TagRouter)
+app.use('/sources', SourceRouter)
 
 const server = app.listen(8000, () =>
   console.log(`
@@ -25,7 +29,6 @@ const server = app.listen(8000, () =>
     ⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api
   `)
 )
-
 
 // app.post(`/signup`, async (req, res) => {
 //   const { name, email, posts } = req.body
