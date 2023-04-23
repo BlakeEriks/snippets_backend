@@ -7,11 +7,13 @@ import SnippetsRouter from './controllers/snippets'
 import SourceRouter from './controllers/source'
 import TagRouter from './controllers/tag'
 import UserRouter from './controllers/user'
+const morgan = require('morgan')
 const cors = require('cors')
 
 const prisma = new PrismaClient()
 const app = express()
 
+app.use(morgan('tiny'))
 app.use(express.json())
 app.use(cors({ origin: '*' }))
 
