@@ -1,5 +1,5 @@
+import { Prisma, PrismaClient } from '@prisma/client'
 import express from 'express'
-import { Prisma, PrismaClient, Tag } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -8,10 +8,10 @@ const BookRouter = express.Router()
 
 // Books
 BookRouter.get('/', async (req, res) => {
-  const books = await prisma.book.findMany({ 
+  const books = await prisma.book.findMany({
     include: {
-      author: true
-    } 
+      author: true,
+    },
   })
   res.json(books)
 })
@@ -22,13 +22,24 @@ BookRouter.post('/', async (req, res) => {
   const data: Prisma.BookCreateInput = {
     author: {
       connect: {
-        id: author.id
-      }
+        id: author.id,
+      },
     },
     title,
   }
-  
+
   res.json(await prisma.book.create({ data }))
+})
+
+BookRouter.put('/:id', async (req, res) => {
+  const id = parseInt(req.params.id)
+
+  const book = await prisma.book.update({
+    where: { id },
+    data: req.body,
+  })
+
+  res.json(book)
 })
 
 BookRouter.delete('/:id', async (req, res) => {

@@ -1,5 +1,5 @@
+import { Prisma, PrismaClient } from '@prisma/client'
 import express from 'express'
-import { Prisma, PrismaClient, Tag } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -16,11 +16,22 @@ AuthorRouter.post('/', async (req, res) => {
   const { name } = req.body
 
   const data: Prisma.AuthorCreateInput = {
-    name
+    name,
   }
-  
+
   const result = await prisma.author.create({ data })
   res.json(result)
+})
+
+AuthorRouter.put('/:id', async (req, res) => {
+  const id = parseInt(req.params.id)
+
+  const author = await prisma.author.update({
+    where: { id },
+    data: req.body,
+  })
+
+  res.json(author)
 })
 
 AuthorRouter.delete('/:id', async (req, res) => {

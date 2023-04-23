@@ -23,15 +23,19 @@ SourceRouter.get('/', async (req, res) => {
 //   res.redirect('/sources');
 // })
 
-SourceRouter.delete('/:id', async (req, res) => {
+SourceRouter.delete('/:id?', async (req, res) => {
   const { id } = req.params
 
-  const result = await prisma.source.delete({
-    where: {
-      id: Number(id),
-    },
-  })
-  res.json(result)
+  if (!id) {
+    res.json(await prisma.source.deleteMany())
+  } else {
+    const result = await prisma.source.delete({
+      where: {
+        id: Number(id),
+      },
+    })
+    res.json(result)
+  }
 })
 
 export default SourceRouter
