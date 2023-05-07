@@ -3,8 +3,6 @@ import express from 'express'
 import AuthorRouter from './controllers/author'
 import BookRouter from './controllers/book'
 import QuoteRouter from './controllers/quote'
-import SnippetsRouter from './controllers/snippets'
-import SourceRouter from './controllers/source'
 import TagRouter from './controllers/tag'
 import UserRouter from './controllers/user'
 const morgan = require('morgan')
@@ -17,13 +15,11 @@ app.use(morgan('tiny'))
 app.use(express.json())
 app.use(cors({ origin: '*' }))
 
-app.use('/snippets', SnippetsRouter)
 app.use('/quotes', QuoteRouter)
 app.use('/authors', AuthorRouter)
 app.use('/books', BookRouter)
 app.use('/users', UserRouter)
 app.use('/tags', TagRouter)
-app.use('/sources', SourceRouter)
 
 const server = app.listen(8000, () =>
   console.log(`

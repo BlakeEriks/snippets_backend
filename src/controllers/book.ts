@@ -11,6 +11,25 @@ BookRouter.get('/', async (req, res) => {
   const books = await prisma.book.findMany({
     include: {
       author: true,
+      quotes: {
+        where: {
+          deleted: false,
+          staged: true,
+        },
+      },
+    },
+    orderBy: {
+      quotes: {
+        _count: 'desc',
+      },
+    },
+    where: {
+      quotes: {
+        some: {
+          deleted: false,
+          staged: true,
+        },
+      },
     },
   })
   res.json(books)
