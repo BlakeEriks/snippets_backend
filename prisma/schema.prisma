@@ -9,8 +9,8 @@ datasource db {
 
 model Quote {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @unique
-  meta      String
+  createdAt DateTime @unique @default(now())
+  meta      String?
   content   String
   quotee    String? // Default to book author
   user      User     @relation(fields: [userId], references: [id])

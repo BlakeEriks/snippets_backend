@@ -8,27 +8,28 @@ const BookRouter = express.Router()
 
 // Books
 BookRouter.get('/', async (req, res) => {
+  const params = req.query
+  const where: any = {}
+  if (params.staged) {
+    where.staged = params.staged === 'true'
+  }
+  if (params.deleted) {
+    where.deleted = params.deleted === 'true'
+  }
+
   const books = await prisma.book.findMany({
     include: {
       author: true,
       quotes: {
-        where: {
-          deleted: false,
-          staged: true,
+        where,
+        orderBy: {
+          createdAt: 'asc',
         },
       },
     },
     orderBy: {
       quotes: {
         _count: 'desc',
-      },
-    },
-    where: {
-      quotes: {
-        some: {
-          deleted: false,
-          staged: true,
-        },
       },
     },
   })

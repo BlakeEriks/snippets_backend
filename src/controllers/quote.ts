@@ -1,5 +1,6 @@
 import { Book, Prisma, PrismaClient } from '@prisma/client'
 import express from 'express'
+import { find } from 'lodash'
 
 const prisma = new PrismaClient()
 
@@ -32,11 +33,26 @@ QuoteRouter.get('/:id', async (req, res) => {
 })
 
 /**
+ * Post a new quote
+ */
+QuoteRouter.post('/', async (req, res) => {
+  const { book, user, ...data } = req.body
+
+  data.createdAt = new Date()
+  data.userId = user.id
+  data.bookId = book.id
+
+  const result = await prisma.quote.create({ data })
+  res.json(result)
+})
+
+/**
  * Upload clippings from a MyClippings.txt file
  */
 QuoteRouter.post('/upload', async (req, res) => {
   const allBooks = await prisma.book.findMany()
   const sourceStrings = new Set<string>(req.body.map(({ source }: Book) => source))
+
   // Create books from source strings if they don't yet exist
   for (const sourceString of Array.from(sourceStrings)) {
     if (allBooks.find(({ source }) => source === sourceString)) continue
@@ -67,8 +83,8 @@ QuoteRouter.post('/upload', async (req, res) => {
   }
 
   const quotes = req.body.map(
-    ({ createdAt, meta, content, source: _source, user }: any): Prisma.QuoteCreateInput => {
-      let { id } = allBooks.find(({ source }) => source === _source)!
+    ({ createdAt, meta, content, source, user }: any): Prisma.QuoteCreateInput => {
+      let { id } = find(allBooks, { source })!
 
       return {
         createdAt: new Date(createdAt),
@@ -84,7 +100,6 @@ QuoteRouter.post('/upload', async (req, res) => {
             id,
           },
         },
-        deleted: false,
       }
     }
   )
@@ -105,13 +120,9 @@ QuoteRouter.post('/upload', async (req, res) => {
 
 QuoteRouter.put('/:id', async (req, res) => {
   const id = parseInt(req.params.id)
-  const data = req.body
-  if (req.body.user) {
-    data.user = {
-      connect: {
-        id: req.body.user.id,
-      },
-    }
+  const { user, ...data } = req.body
+  if (user) {
+    data.userId = user.id
   }
   const quote = await prisma.quote.update({
     where: { id },
