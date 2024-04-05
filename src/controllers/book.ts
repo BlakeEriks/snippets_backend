@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import express from 'express'
 
 const prisma = new PrismaClient()
@@ -37,16 +37,8 @@ BookRouter.get('/', async (req, res) => {
 })
 
 BookRouter.post('/', async (req, res) => {
-  const { author, title } = req.body
-
-  const data: Prisma.BookCreateInput = {
-    author: {
-      connect: {
-        id: author.id,
-      },
-    },
-    title,
-  }
+  const { author, ...data } = req.body
+  data.authorId = data.authorId ?? author.id
 
   res.json(await prisma.book.create({ data }))
 })
