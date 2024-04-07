@@ -61,6 +61,7 @@ QuoteRouter.post('/upload', async (req, res) => {
   for (const sourceString of Array.from(sourceStrings)) {
     if (allBooks.find(({ source }) => source === sourceString)) continue
 
+    // TODO pull out this parsing logic
     // ex The 7 Habits of Highly Effective People (Covey, Stephen R.)
     const [title, author] = sourceString.split(' (')
     let authorName = author.replace(')', '') // Covey, Stephen R.

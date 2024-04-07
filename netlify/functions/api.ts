@@ -13,10 +13,13 @@ const api = express()
 api.use(express.json())
 api.use(cors({ origin: '*' }))
 
-api.use('/quotes', QuoteRouter)
-api.use('/authors', AuthorRouter)
-api.use('/books', BookRouter)
-api.use('/users', UserRouter)
-api.use('/tags', TagRouter)
+const baseRouter = express.Router()
+baseRouter.use('/quotes', QuoteRouter)
+baseRouter.use('/authors', AuthorRouter)
+baseRouter.use('/books', BookRouter)
+baseRouter.use('/users', UserRouter)
+baseRouter.use('/tags', TagRouter)
+
+api.use('/api', baseRouter)
 
 export const handler = serverless(api)
