@@ -2,10 +2,10 @@
   "name": "rest-express",
   "version": "1.0.0",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "start": "node src/index.ts"
+    "build": "tsc",
+    "start": "node dist/src/index.js"
   },
   "engines": {
     "node": "16.x"
