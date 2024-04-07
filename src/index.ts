@@ -1,14 +1,13 @@
-import { PrismaClient } from '@prisma/client'
+import cors from 'cors'
 import express from 'express'
+import morgan from 'morgan'
 import AuthorRouter from './controllers/author'
 import BookRouter from './controllers/book'
 import QuoteRouter from './controllers/quote'
 import TagRouter from './controllers/tag'
 import UserRouter from './controllers/user'
-const morgan = require('morgan')
-const cors = require('cors')
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 const app = express()
 
 app.use(morgan('tiny'))
