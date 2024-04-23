@@ -29,6 +29,32 @@ UserRouter.get('/:id/favorites', async (req, res) => {
   res.json(map(favorites, 'quoteId'))
 })
 
+UserRouter.post('/:id/favorites/:quoteId', async (req, res) => {
+  const { id, quoteId } = req.params
+
+  const result = await prisma.userFavorite.create({
+    data: {
+      userId: Number(id),
+      quoteId: Number(quoteId),
+    },
+  })
+
+  res.json(result)
+})
+
+UserRouter.delete('/:id/favorites/:quoteId', async (req, res) => {
+  const { id, quoteId } = req.params
+
+  const result = await prisma.userFavorite.deleteMany({
+    where: {
+      userId: Number(id),
+      quoteId: Number(quoteId),
+    },
+  })
+
+  res.json(result)
+})
+
 UserRouter.post('/', async (req, res) => {
   const { name } = req.body
 
